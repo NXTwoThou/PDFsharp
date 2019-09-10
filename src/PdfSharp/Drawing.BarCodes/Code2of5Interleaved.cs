@@ -33,14 +33,7 @@ namespace PdfSharp.Drawing.BarCodes
     /// Implementation of the Code 2 of 5 bar code.
     /// </summary>
     public class Code2of5Interleaved : ThickThinBarCode
-    {
-        /// <summary>
-        /// Initializes a new instance of Interleaved2of5.
-        /// </summary>
-        public Code2of5Interleaved()
-            : base("", XSize.Empty, CodeDirection.LeftToRight)
-        {}
-
+    {        
         /// <summary>
         /// Initializes a new instance of Interleaved2of5.
         /// </summary>
