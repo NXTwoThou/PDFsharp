@@ -107,5 +107,15 @@ namespace PdfSharp.Pdf
             set { _useFlateDecoderForJpegImages = value; }
         }
         PdfUseFlateDecoderForJpegImages _useFlateDecoderForJpegImages = PdfUseFlateDecoderForJpegImages.Never;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to include Xmp in saved PDF.  Setting Fales will decrease final file size
+        /// </summary>
+        public bool EnableXmp
+        {
+            get { return _enableXmp; }
+            set { _enableXmp = value; }
+        }
+        bool _enableXmp = true;
     }
 }
