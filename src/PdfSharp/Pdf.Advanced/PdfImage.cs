@@ -311,7 +311,7 @@ namespace PdfSharp.Pdf.Advanced
                     }
                     else
                     {
-#if CORE_WITH_GDI
+#if CORE || GDI
                         // No stream, no filename, get image data.
                         // Save the image to a memory stream.
                         _image._gdiImage.Save(memory, ImageFormat.Jpeg);
