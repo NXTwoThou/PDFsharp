@@ -296,7 +296,8 @@ namespace PdfSharp.Pdf.Advanced
                 else
                 {
                     memory = new MemoryStream();
-                    ownMemory = true;
+                    ownMemory = true;                    
+
                     // If we have a stream, copy data from the stream.
                     if (_image._stream != null && _image._stream.CanSeek)
                     {
@@ -311,7 +312,7 @@ namespace PdfSharp.Pdf.Advanced
                     }
                     else
                     {
-#if CORE_WITH_GDI
+#if CORE || GDI
                         // No stream, no filename, get image data.
                         // Save the image to a memory stream.
                         _image._gdiImage.Save(memory, ImageFormat.Jpeg);

@@ -44,9 +44,13 @@ namespace PdfSharp.Pdf.IO
     /// </summary>
     internal class PdfWriter
     {
+        internal bool _cantSeek = false;
+        internal int _cantSeekCurrentPosition = 0;
         public PdfWriter(Stream pdfStream, PdfStandardSecurityHandler securityHandler)
         {
             _stream = pdfStream;
+            if (!pdfStream.CanSeek)
+                _cantSeek = true;
             _securityHandler = securityHandler;
             //System.Xml.XmlTextWriter
 #if DEBUG
@@ -74,7 +78,12 @@ namespace PdfSharp.Pdf.IO
 
         public int Position
         {
-            get { return (int)_stream.Position; }
+            get {
+                if (_cantSeek)
+                    return _cantSeekCurrentPosition;
+                else
+                    return (int)_stream.Position;
+            }
         }
 
         /// <summary>
@@ -310,6 +319,8 @@ namespace PdfSharp.Pdf.IO
             byte[] bytes = PdfEncoders.DocEncoding.GetBytes(text);
             bytes = PdfEncoders.FormatStringLiteral(bytes, false, false, true, _securityHandler);
             _stream.Write(bytes, 0, bytes.Length);
+            if (_cantSeek)
+                _cantSeekCurrentPosition += bytes.Length;
             _lastCat = CharCat.Delimiter;
         }
 
@@ -447,6 +458,8 @@ namespace PdfSharp.Pdf.IO
 
             byte[] bytes = PdfEncoders.RawEncoding.GetBytes(rawString);
             _stream.Write(bytes, 0, bytes.Length);
+            if (_cantSeek)
+                _cantSeekCurrentPosition += bytes.Length;
             _lastCat = GetCategory((char)bytes[bytes.Length - 1]);
         }
 
@@ -455,6 +468,8 @@ namespace PdfSharp.Pdf.IO
             Debug.Assert(ch < 256, "Raw character greater than 255 detected.");
 
             _stream.WriteByte((byte)ch);
+            if (_cantSeek)
+                _cantSeekCurrentPosition += sizeof(byte);
             _lastCat = GetCategory(ch);
         }
 
@@ -464,6 +479,8 @@ namespace PdfSharp.Pdf.IO
                 return;
 
             _stream.Write(bytes, 0, bytes.Length);
+            if (_cantSeek)
+                _cantSeekCurrentPosition += bytes.Length;
             _lastCat = GetCategory((char)bytes[bytes.Length - 1]);
         }
 
@@ -485,7 +502,7 @@ namespace PdfSharp.Pdf.IO
               (version % 10).ToString(CultureInfo.InvariantCulture) + "\n%\xD3\xF4\xCC\xE1\n");
             WriteRaw(header.ToString());
 
-            if (_layout == PdfWriterLayout.Verbose)
+            if (_layout == PdfWriterLayout.Verbose && !_cantSeek)
             {
                 WriteRaw(String.Format("% PDFsharp Version {0} (verbose mode)\n", VersionInfo.Version));
                 // Keep some space for later fix-up.
@@ -503,10 +520,10 @@ namespace PdfSharp.Pdf.IO
         {
             WriteRaw("startxref\n");
             WriteRaw(startxref.ToString(CultureInfo.InvariantCulture));
-            WriteRaw("\n%%EOF\n");
-            int fileSize = (int)_stream.Position;
-            if (_layout == PdfWriterLayout.Verbose)
+            WriteRaw("\n%%EOF\n");            
+            if (_layout == PdfWriterLayout.Verbose && !_cantSeek)
             {
+                int fileSize = (int)_stream.Position;
                 TimeSpan duration = DateTime.Now - document._creation;
 
                 _stream.Position = _commentPosition;
@@ -590,11 +607,17 @@ namespace PdfSharp.Pdf.IO
                     {
                         //if (cat == CharCat.Character || ch == '/')
                         _stream.WriteByte((byte)' ');
+                        if (_cantSeek)
+                            _cantSeekCurrentPosition += sizeof(byte);
                     }
                     else
                     {
                         if (cat == CharCat.Character)
+                        {
                             _stream.WriteByte((byte)' ');
+                            if (_cantSeek)
+                                _cantSeekCurrentPosition += sizeof(byte);
+                        }
                     }
                     break;
             }

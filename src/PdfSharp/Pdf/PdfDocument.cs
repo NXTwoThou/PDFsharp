@@ -488,10 +488,13 @@ namespace PdfSharp.Pdf
                 Debug.WriteLine("PrepareForSave: Number of deleted unreachable objects: " + removed);
             _irefTable.Renumber();
 #endif
-            
-            // @PDF/UA
-            // Create PdfMetadata now to include the final document information in XMP generation.
-            Catalog.Elements.SetReference(PdfCatalog.Keys.Metadata, new PdfMetadata(this));
+
+            if (Options.EnableXmp)
+            {
+                // @PDF/UA
+                // Create PdfMetadata now to include the final document information in XMP generation.
+                Catalog.Elements.SetReference(PdfCatalog.Keys.Metadata, new PdfMetadata(this));
+            }
         }
 
         /// <summary>

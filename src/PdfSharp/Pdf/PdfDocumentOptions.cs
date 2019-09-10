@@ -107,5 +107,18 @@ namespace PdfSharp.Pdf
             set { _useFlateDecoderForJpegImages = value; }
         }
         PdfUseFlateDecoderForJpegImages _useFlateDecoderForJpegImages = PdfUseFlateDecoderForJpegImages.Never;
+
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to compress bilevel images using CCITT compression.
+        /// With true, PDFsharp will try FlateDecode CCITT and will use the smallest one or a combination of both.
+        /// With false, PDFsharp will always use FlateDecode only - files may be a few bytes larger, but file creation is faster.
+        /// </summary>
+        public bool EnableXmp
+        {
+            get { return _enableXmp; }
+            set { _enableXmp = value; }
+        }
+        bool _enableXmp = true;
     }
 }

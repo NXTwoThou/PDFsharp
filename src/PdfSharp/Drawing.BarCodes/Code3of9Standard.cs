@@ -40,13 +40,6 @@ namespace PdfSharp.Drawing.BarCodes
         /// <summary>
         /// Initializes a new instance of Standard3of9.
         /// </summary>
-        public Code3of9Standard()
-            : base("", XSize.Empty, CodeDirection.LeftToRight)
-        { }
-
-        /// <summary>
-        /// Initializes a new instance of Standard3of9.
-        /// </summary>
         public Code3of9Standard(string code)
             : base(code, XSize.Empty, CodeDirection.LeftToRight)
         { }
